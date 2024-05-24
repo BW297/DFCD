@@ -1,0 +1,12 @@
+{
+    "dataset": "MOOCRadar",
+    "files": {
+      "q_matrix": "q.csv",
+      "response": "TotalData.csv"
+    },
+    "info": {
+      "student_num": 2000,
+      "exercise_num": 915,
+      "knowledge_num": 696
+    }
+  }
