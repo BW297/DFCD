@@ -57,6 +57,8 @@ def generate_embeddings_openai(config):
     config["student_embeddings"] = []
     for student_text in tqdm(config['student_text']):
         config["student_embeddings"].append(embeddings_model.embed_documents(student_text))
+    with open('../data/XES3G5M/embedding_openai.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('XES3G5M/result/embedding/embedding_openai.pkl', 'wb') as f:
         pickle.dump(config, f)
 
@@ -70,6 +72,8 @@ def generate_embeddings_BAAI(config):
     config["student_embeddings"] = []
     for student_text in tqdm(config['student_text']):
         config["student_embeddings"].append(embeddings_model.encode(student_text, batch_size=12, max_length=8192,)['dense_vecs'])
+    with open('../data/XES3G5M/embedding_BAAI.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('XES3G5M/result/embedding/embedding_BAAI.pkl', 'wb') as f:
         pickle.dump(config, f)
 
@@ -82,6 +86,8 @@ def generate_embeddings_m3e(config):
     config["student_embeddings"] = []
     for student_text in tqdm(config['student_text']):
         config["student_embeddings"].append(embeddings_model.encode(student_text))
+    with open('../data/XES3G5M/embedding_m3e.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('XES3G5M/result/embedding/embedding_m3e.pkl', 'wb') as f:
         pickle.dump(config, f)
 
@@ -105,7 +111,8 @@ def generate_embeddings_Instructor(config):
         for text in student_text:
             tmp.append(['Represent the student response log:', text])
         config["student_embeddings"].append(embeddings_model.encode(tmp))
-
+    with open('../data/XES3G5M/embedding_instructor.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('XES3G5M/result/embedding/embedding_instructor.pkl', 'wb') as f:
         pickle.dump(config, f)
 

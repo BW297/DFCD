@@ -139,10 +139,14 @@ def run(config):
     print('Final student number: {}, Final question number: {}, Final concept number: {}, Final response number: {}'.format(cnt_stu, cnt_question, cnt_concept, len(TotalData)))
     np.savetxt('MOOCRadar/result/data/TotalData.csv', TotalData, delimiter=',')
     np.savetxt('MOOCRadar/result/data/q.csv', q_matrix, delimiter=',')
+    np.savetxt('../data/MOOCRadar/TotalData.csv', TotalData, delimiter=',')
+    np.savetxt('../data/MOOCRadar/q.csv', q_matrix, delimiter=',')
     config_map = {}
     config_map['stu_map'] = stu_map
     config_map['question_map'] = question_map
     config_map['concept_map'] = concept_map
     config_map['reverse_question_map'] = reverse_question_map
     with open('MOOCRadar/result/data/map.pkl', 'wb') as f:
+        pickle.dump(config_map, f)
+    with open('../data/MOOCRadar/map.pkl', 'wb') as f:
         pickle.dump(config_map, f)

@@ -57,6 +57,8 @@ def generate_embeddings_openai(config):
     config["student_embeddings"] = []
     for student_text in tqdm(config['student_text']):
         config["student_embeddings"].append(embeddings_model.embed_documents(student_text))
+    with open('../data/NeurIPS2020/embedding_openai.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('NeurIPS2020/result/embedding/embedding_openai.pkl', 'wb') as f:
         pickle.dump(config, f)
 
@@ -71,6 +73,8 @@ def generate_embeddings_BAAI(config):
     config["student_embeddings"] = []
     for student_text in tqdm(config['student_text']):
         config["student_embeddings"].append(embeddings_model.encode(student_text, batch_size=12, max_length=8192,)['dense_vecs'])
+    with open('../data/NeurIPS2020/embedding_BAAI.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('NeurIPS2020/result/embedding/embedding_BAAI.pkl', 'wb') as f:
         pickle.dump(config, f)
 
@@ -84,6 +88,8 @@ def generate_embeddings_m3e(config):
     config["student_embeddings"] = []
     for student_text in tqdm(config['student_text']):
         config["student_embeddings"].append(embeddings_model.encode(student_text))
+    with open('../data/NeurIPS2020/embedding_m3e.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('NeurIPS2020/result/embedding/embedding_m3e.pkl', 'wb') as f:
         pickle.dump(config, f)
 
@@ -108,6 +114,8 @@ def generate_embeddings_Instructor(config):
             tmp.append(['Represent the student response log:', text])
         config["student_embeddings"].append(embeddings_model.encode(tmp))
 
+    with open('../data/NeurIPS2020/embedding_instructor.pkl', 'wb') as f:
+        pickle.dump(config, f)
     with open('NeurIPS2020/result/embedding/embedding_instructor.pkl', 'wb') as f:
         pickle.dump(config, f)
 

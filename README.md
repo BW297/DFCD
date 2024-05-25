@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # DFCD</u>-NeurIPS 2024
 
 We provide comprehensive instructions on how to run DFCD in the ***<u>"exps"</u>*** directory. And due to the memory limit, we unable to commit our data after processing directly. So you need to process datasets by yourself, you can run the data preprocess in the ***<u>"data_preprocess"</u>*** directory.
@@ -31,10 +30,14 @@ torch_sparse==0.6.18+pt22cu121
 tqdm==4.65.0
 vegas==6.0.1
 ```
+Please install all the dependencies listed in the `requirements.txt` file by running the following command:
 
+```bash
+pip install -r requirements.txt
+```
 
 # Dataset
-You can download three datasets used in our paper here.
+You can download three datasets used in our paper here, but the raw dataset which is needed in this paper has been included.
 
 NeurIPS2020: https://eedi.com/projects/neurips-education-challenge
 
@@ -48,7 +51,9 @@ You should process datasets by yourself, you need first
 
 > cd data_preprocess
 
-Then, you can process different dataset using following command example:
+Noting: We have include the raw dataset in our folder with name of the datasets, but you need to unzip the dataset first, please make sure that you unzip the  `data.zip` in every dataset folder
+
+Then, you can process different dataset with different settings using following command example:
 
 ```shell
 python main_filter.py --dataset XES3G5M --seed 0 --stu_num 2000 --exer_num 2000 --know_num 200 --least_respone_num 50
@@ -56,7 +61,18 @@ python main_filter.py --dataset XES3G5M --seed 0 --stu_num 2000 --exer_num 2000 
 python main_embedding.py --dataset XES3G5M --llm BAAI
 ```
 
-If you want process other dataset , just change the "--dataset" 
+But if you want to use dataset setting in our paper, just run the run.sh using following command: 
+
+```shell
+bash run.sh
+```
+
+Noting: The processing need the OpenAI api keys, please using the following command to export your OpenAI api keys:
+
+```shell
+export OPENAI_API_KEY=<Your OpenAI API key>
+```
+
 
 
 # Experiments
@@ -83,9 +99,12 @@ python dfcd_exp.py --method=dfcd --data_type=XES3G5M --lr=1e-4 --test_size=0.2 -
 python dfcd_exp.py --method=dfcd --data_type=XES3G5M --lr=1e-4 --test_size=0.2 --seed=0 --batch_size=1024 --device=cuda:0 --epoch=20 --encoder_type=transformer --split=Know --mode=2 --text_embedding_model=openai
 ```
 
-## Standard Scenario 
+### Standard Scenario 
 
 ```shell
-python dfcd_exp.py --method=dfcd --data_type=XES3G5M --lr=1e-4 --test_size=0.2 --seed=0 --batch_size=1024 --device=cuda:0 --epoch=20 --encoder_type=transformer --split=Standard --mode=2 --text_embedding_model=openai
+python dfcd_exp.py --method=dfcd --data_type=XES3G5M --lr=1e-4 --test_size=0.2 --seed=0 --batch_size=1024 --device=cuda:0 --epoch=20 --encoder_type=transformer --split=Original --mode=2 --text_embedding_model=openai
 ```
 
+If you want to change the dataset, just replace the parameter of `--data_type` with the name of your target dataset such as NeurIPS2020 or MOOCRadar
+
+Noting: If you don't use the setting in our paper, please make sure that you change the `config.json` in every dataset folder and the `data_params_dict.py` in data folder with your setting. 

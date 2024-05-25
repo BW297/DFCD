@@ -85,11 +85,15 @@ def run(config):
     print('Final student number: {}, Final question number: {}, Final concept number: {}, Final response number: {}'.format(cnt_stu, cnt_question, cnt_concept, len(TotalData)))
     np.savetxt('NeurIPS2020/result/data/TotalData.csv', TotalData, delimiter=',')
     np.savetxt('NeurIPS2020/result/data/q.csv', q_matrix, delimiter=',')
+    np.savetxt('../data/NeurIPS2020/TotalData.csv', TotalData, delimiter=',')
+    np.savetxt('../data/NeurIPS2020/q.csv', q_matrix, delimiter=',')
     config_map = {}
     config_map['stu_map'] = stu_map
     config_map['question_map'] = question_map
     config_map['concept_map'] = concept_map
     config_map['reverse_question_map'] = reverse_question_map
     with open('NeurIPS2020/result/data/map.pkl', 'wb') as f:
+        pickle.dump(config_map, f)
+    with open('../data/NeurIPS2020/map.pkl', 'wb') as f:
         pickle.dump(config_map, f)
 
