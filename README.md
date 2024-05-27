@@ -1,6 +1,8 @@
 # DFCD</u>-NeurIPS 2024
 
-We provide comprehensive instructions on how to run DFCD in the ***<u>"exps"</u>*** directory. And due to the memory limit, we unable to commit our data after processing directly. So you need to process datasets by yourself, you can run the data preprocess in the ***<u>"data_preprocess"</u>*** directory.
+We provide comprehensive instructions on how to run DFCD in the ***<u>"exps"</u>*** directory. 
+
+## Noting that although the size of raw datasets are relatively small, but in our paper, we include the text semantic features in the framework which need a huge memory to store after embedding. And such a huge size of the emebeddings is not supported to be uploaded on the github, so you need to process datasets by yourself. But we have tried our best to provide you with the details on how to process the raw dataset, you can run the data preprocess in the ***<u>"data_preprocess"</u>*** directory with the following instruction.
 
 # Requirements	
 
