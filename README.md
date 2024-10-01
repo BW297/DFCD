@@ -1,4 +1,4 @@
-# DFCD</u>-NeurIPS 2024
+# DFCD</u>-ICLR 2025
 
 We provide comprehensive instructions on how to run DFCD in the ***<u>"exps"</u>*** directory. 
 
