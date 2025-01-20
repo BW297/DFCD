@@ -1,4 +1,4 @@
-# DFCD</u>-ICLR 2025
+# DFCD
 
 We provide comprehensive instructions on how to run DFCD in the ***<u>"exps"</u>*** directory. 
 
