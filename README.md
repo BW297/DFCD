@@ -1,36 +1,23 @@
 # DFCD
 
-We provide comprehensive instructions on how to run DFCD in the ***<u>"exps"</u>*** directory. 
+The implementation for the KDD-25 paper "A Dual-Fusion Cognitive Diagnosis Framework for Open Student Learning Environments". The paper are in the main.pdf , which are contained in the folder named paper.
 
-### Noting: Although the size of raw datasets are relatively small, but in our paper, we include the text semantic features in the framework which need a huge space to be stored after embedding. And such a huge size of the embeddings is not supported to be uploaded on the github, so you need to process datasets by yourself. But we have tried our best to provide you with the details on how to process the raw dataset, you can run the data preprocess in the ***<u>"data_preprocess"</u>*** directory with the following instruction.
-
-# Requirements	
+# 💻 Requirements	
 
 ```python
-dgl==2.1.0+cu121
-edustudio==1.1.1
-FlagEmbedding==1.2.9
-FlagEmbedding==1.2.10
+FlagEmbedding==1.3.4
 InstructorEmbedding==1.0.1
-InstructorEmbedding==1.0.1
-joblib==1.3.2
-langchain==0.2.1
-langchain_core==0.2.1
-langchain_google_genai==1.0.5
-matplotlib==3.8.3
-networkx==2.7
-numpy==1.26.4
-openai==1.30.2
-pandas==2.2.2
-protobuf==5.27.0
-scikit_learn==1.4.1.post1
-scipy==1.13.1
-seaborn==0.13.2
-torch==2.2.1
-torch_geometric==2.5.3
-torch_sparse==0.6.18+pt22cu121
-tqdm==4.65.0
-vegas==6.0.1
+joblib==1.4.2
+langchain==0.3.25
+numpy==2.2.6
+openai==1.82.0
+pandas==2.2.3
+scikit_learn==1.6.1
+sentence_transformers==3.3.1
+torch==2.4.0
+torch_geometric==2.6.1
+torch_sparse==0.6.18+pt24cu121
+tqdm==4.66.5
 ```
 Please install all the dependencies listed in the `requirements.txt` file by running the following command:
 
@@ -38,22 +25,17 @@ Please install all the dependencies listed in the `requirements.txt` file by run
 pip install -r requirements.txt
 ```
 
-# Dataset
-You can download three datasets used in our paper here, but the raw dataset which is needed in this paper has been included.
+# 🛠️ Data Preprocess
 
-NeurIPS2020: https://eedi.com/projects/neurips-education-challenge
-
-XES3G5M: https://github.com/ai4ed/XES3G5M
-
-MOOCRadar: https://github.com/THU-KEG/MOOC-Radar
-
-# Data Preprocess
-
-You should process datasets by yourself, you need first 
+Although the size of raw datasets are relatively small, but in our paper, we include the text semantic features in the framework which need a huge space to be stored after embedding. And such a huge size of the embeddings is not supported to be uploaded on the github, so you need to process datasets by yourself. But we have tried our best to provide you with the details on how to process the raw dataset, you can run the data preprocess in the ***<u>"data_preprocess"</u>*** directory with the following instruction. You need first:
 
 > cd data_preprocess
 
-Noting: We have include the raw dataset in our folder with name of the datasets, but you need to unzip the dataset first, please make sure that you unzip the  `data.zip` in every dataset folder
+We have include the raw dataset in our folder with name of the datasets, but you need to unzip the dataset first, please make sure that you unzip the  `data.zip` in every dataset folder using following command:
+
+```shell
+unzip data.zip -d data
+```
 
 Then, you can process different dataset with different settings using following command example:
 
@@ -77,7 +59,7 @@ export OPENAI_API_KEY=<Your OpenAI API key>
 
 
 
-# Experiments
+# 🛠️ Experiments
 
 Firstly, you need
 
@@ -110,3 +92,18 @@ python dfcd_exp.py --method=dfcd --data_type=XES3G5M --lr=1e-4 --test_size=0.2 -
 If you want to change the dataset, just replace the parameter of `--data_type` with the name of your target dataset such as NeurIPS2020 or MOOCRadar
 
 Noting: If you don't use the setting in our paper, please make sure that you change the `config.json` in every dataset folder and the `data_params_dict.py` in data folder with your setting. 
+
+# Reference
+
+Yuanhao Liu, Shuo Liu, Yimeng Liu, Chanjin Zheng, Wei Zhang, Hong Qian "A Dual-Fusion Cognitive Diagnosis Framework for Open Student Learning Environments" In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining, 2025.
+
+## Bibtex
+```
+@inproceedings{liu2025dfcd,
+ author = {Yuanhao Liu, Shuo Liu, Yimeng Liu, Chanjin Zheng, Wei Zhang, and Hong Qian},
+ booktitle = {Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD)},
+ title = {A Dual-Fusion Cognitive Diagnosis Framework for Open Student Learning Environments},
+ year = {2025},
+ address = {Toronto, Canada}
+}
+```

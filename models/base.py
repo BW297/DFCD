@@ -1,5 +1,3 @@
-import pprint
-
 import torch
 import numpy as np
 import torch.nn as nn
@@ -80,7 +78,7 @@ class BaseModel(nn.Module):
                     if student.detach().cpu().numpy() in self.config['new_idx']:
                         new_pred.append(pred[idx])
                         new_y.append(y.cpu().numpy().tolist()[idx])
-            elif self.config['split'] == 'Exer':
+            elif self.config['split'] == 'Exer' or self.config['split'] == 'Know':
                 for idx, exercise in enumerate(exercise_id):
                     if exercise.detach().cpu().numpy() in self.config['new_idx']:
                         new_pred.append(pred[idx])
@@ -90,7 +88,7 @@ class BaseModel(nn.Module):
             new_preds.extend(new_pred)
             new_ys.extend(new_y)
 
-        if self.config['split'] == 'Stu' or self.config['split'] == 'Exer':
+        if self.config['split'] == 'Stu' or self.config['split'] == 'Exer' or self.config['split'] == 'Know':
             return roc_auc_score(new_ys, new_preds), average_precision_score(new_ys, new_preds), accuracy_score(new_ys, np.array(
             new_preds) >= 0.5), np.sqrt(mean_squared_error(new_ys, new_preds)), f1_score(new_ys, np.array(new_preds) >= 0.5), get_doa(
             self.config,

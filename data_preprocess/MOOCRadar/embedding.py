@@ -1,7 +1,5 @@
 import os
 import openai
-import random
-import numpy as np
 import pandas as pd
 import json
 from tqdm import tqdm

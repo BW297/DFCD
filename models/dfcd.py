@@ -1,9 +1,7 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from base import BaseModel
 import numpy as np
-from utils import create_gnn_encoder, Weighted_Summation
+from utils import Weighted_Summation
 from decoders import get_decoder, get_mlp_encoder, GNNEncoder
 
 

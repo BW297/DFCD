@@ -1,5 +1,4 @@
 import os
-import dgl
 import torch
 import torch.nn as nn
 import random
@@ -9,10 +8,6 @@ from torch.utils.data import TensorDataset, DataLoader
 from joblib import Parallel, delayed
 from sklearn.model_selection import train_test_split
 
-
-"""
-For Positive MLP
-"""
 class NoneNegClipper(object):
     def __init__(self):
         super(NoneNegClipper, self).__init__()
@@ -135,29 +130,6 @@ def get_dataloader(config):
         for _ in [config['np_train'], config['np_test']]]
     return train_dataloader, test_dataloader
 
-
-def get_interaction_matrix(config, data):
-    interaction_matrix = torch.zeros(size=(config['stu_num'], config['prob_num']))
-    for k in range(data.shape[0]):
-        stu_id = int(data[k, 0])
-        exer_id = int(data[k, 1])
-        if int(data[k, 2]) == 1:
-            interaction_matrix[stu_id, exer_id] = 1
-        else:
-            interaction_matrix[stu_id, exer_id] = -1
-    return interaction_matrix
-
-
-def find_nearest_neighbors(matrix):
-    from sklearn.metrics.pairwise import cosine_similarity
-    similarities = cosine_similarity(matrix)
-
-    np.fill_diagonal(similarities, -1)
-    nearest_neighbor_indices = np.argmax(similarities, axis=1)
-
-    return nearest_neighbor_indices
-
-
 def get_top_k_concepts(datatype: str, topk: int = 10):
     q = pd.read_csv('../data/{}/q.csv'.format(datatype), header=None).to_numpy()
     a = pd.read_csv('../data/{}/TotalData.csv'.format(datatype), header=None).to_numpy()
@@ -221,35 +193,6 @@ def get_r_matrix(np_test, stu_num, prob_num, new_idx=None):
     return r
 
 
-def create_gnn_encoder(encoder_type, in_channels, out_channels, num_heads=4):
-    from torch_geometric.nn import (
-        Linear,
-        GCNConv,
-        GATConv,
-        GATv2Conv,
-        GINConv,
-        SGConv,
-        SAGEConv,
-        TransformerConv,
-    )
-    if encoder_type == 'gat':
-        return GATConv(in_channels=-1, out_channels=out_channels, heads=num_heads)
-    elif encoder_type == 'gatv2':
-        return GATv2Conv(in_channels=-1, out_channels=out_channels, heads=num_heads)
-    elif encoder_type == 'gcn':
-        return GCNConv(in_channels=in_channels, out_channels=out_channels)
-    elif encoder_type == "gin":
-        return GINConv(Linear(in_channels=in_channels, out_channels=out_channels), train_eps=True)
-    elif encoder_type == "sgc":
-        return SGConv(in_channels=in_channels, out_channels=out_channels)
-    elif encoder_type == "sage":
-        return SAGEConv(in_channels=in_channels, out_channels=out_channels)
-    elif encoder_type == 'transformer':
-        return TransformerConv(in_channels=-1, out_channels=out_channels, heads=num_heads)
-    else:
-        raise ValueError('Unexplored')
-
-
 def construct_data_geometric(config, data):
     from torch_geometric.data import Data
 
@@ -298,124 +241,6 @@ def construct_data_geometric(config, data):
     edge_index = torch.tensor([se_source_index + ek_source_index, se_target_index + ek_target_index], dtype=torch.long)
     graph_data = Data(x_llm=node_features_llm, x_init=node_features_init, edge_index=edge_index)
     return graph_data
-
-
-def dgl2tensor(g):
-    import networkx as nx
-    nx_graph = g.to_networkx()
-    adj_matrix = nx.to_numpy_matrix(nx_graph)
-    tensor = torch.from_numpy(adj_matrix)
-    return tensor
-
-
-def concept_distill(matrix, concept):
-    coeff = 1.0 / torch.sum(matrix, dim=1)
-    concept = matrix.to(torch.float64) @ concept
-    concept_distill = concept * coeff[:, None]
-    return concept_distill
-
-
-def get_subgraph(g, id, device):
-    return dgl.in_subgraph(g, id).to(device)
-
-
-
-def build_graph4CE(config: dict):
-    q = config['q']
-    q = q.detach().cpu().numpy()
-    know_num = config['know_num']
-    exer_num = config['prob_num']
-    node = exer_num + know_num
-    g = dgl.DGLGraph()
-    g.add_nodes(node)
-    edge_list = []
-    indices = np.where(q != 0)
-    for exer_id, know_id in zip(indices[0].tolist(), indices[1].tolist()):
-        edge_list.append((int(know_id + exer_num), int(exer_id)))
-        edge_list.append((int(exer_id), int(know_id + exer_num)))
-    src, dst = tuple(zip(*edge_list))
-    g.add_edges(src, dst)
-    return g
-
-
-def build_graph4SE(config: dict, mode='tl'):
-    if mode == 'tl':
-        data = config['np_train']
-    elif mode == 'ind_train':
-        data = config['np_train_old']
-    else:
-        data = np.vstack((config['np_train_old'], config['np_train_new']))
-
-    stu_num = config['stu_num']
-    exer_num = config['prob_num']
-    node = stu_num + exer_num
-    g_right = dgl.DGLGraph()
-    g_right.add_nodes(node)
-    g_wrong = dgl.DGLGraph()
-    g_wrong.add_nodes(node)
-
-    right_edge_list = []
-    wrong_edge_list = []
-    for index in range(data.shape[0]):
-        stu_id = data[index, 0]
-        exer_id = data[index, 1]
-        if int(data[index, 2]) == 1:
-            if mode == 'tl' or mode == 'ind_train' or int(stu_id) in config['exist_idx']:
-                right_edge_list.append((int(stu_id), int(exer_id + stu_num)))
-                right_edge_list.append((int(exer_id + stu_num), int(stu_id)))
-            else:
-                right_edge_list.append((int(exer_id + stu_num), int(stu_id)))
-        else:
-            if mode == 'tl' or mode == 'ind_train' or int(stu_id) in config['exist_idx']:
-                wrong_edge_list.append((int(stu_id), int(exer_id + stu_num)))
-                wrong_edge_list.append((int(exer_id + stu_num), int(stu_id)))
-            else:
-                wrong_edge_list.append((int(exer_id + stu_num), int(stu_id)))
-    right_src, right_dst = tuple(zip(*right_edge_list))
-    wrong_src, wrong_dst = tuple(zip(*wrong_edge_list))
-    g_right.add_edges(right_src, right_dst)
-    g_wrong.add_edges(wrong_src, wrong_dst)
-    return g_right, g_wrong
-
-
-def build_graph4SC(config: dict, mode='tl'):
-    if mode == 'tl':
-        data = config['np_train']
-    elif mode == 'ind_train':
-        data = config['np_train_old']
-    else:
-        data = np.vstack((config['np_train_old'], config['np_train_new']))
-    stu_num = config['stu_num']
-    know_num = config['know_num']
-    q = config['q']
-    q = q.detach().cpu().numpy()
-    node = stu_num + know_num
-    g = dgl.DGLGraph()
-    g.add_nodes(node)
-    edge_list = []
-    sc_matrix = np.zeros(shape=(stu_num, know_num))
-    for index in range(data.shape[0]):
-        stu_id = data[index, 0]
-        exer_id = data[index, 1]
-        concepts = np.where(q[int(exer_id)] != 0)[0]
-        for concept_id in concepts:
-            if mode == 'tl' or mode == 'ind_train' or int(stu_id) in config['exist_idx']:
-                if sc_matrix[int(stu_id), int(concept_id)] != 1:
-                    edge_list.append((int(stu_id), int(concept_id + stu_num)))
-                    edge_list.append((int(concept_id + stu_num), int(stu_id)))
-                    sc_matrix[int(stu_id), int(concept_id)] = 1
-            else:
-                if mode != 'involve':
-                    if sc_matrix[int(stu_id), int(concept_id)] != 1:
-                        edge_list.append((int(concept_id + stu_num), int(stu_id)))
-                        sc_matrix[int(stu_id), int(concept_id)] = 1
-                else:
-                    if sc_matrix[int(stu_id), int(concept_id)] != 1:
-                        edge_list.append((int(stu_id), int(concept_id + stu_num)))
-                        sc_matrix[int(stu_id), int(concept_id)] = 1
-    src, dst = tuple(zip(*edge_list))
-    g.add_edges(src, dst)
-    return g
 
 class Weighted_Summation(nn.Module):
     def __init__(self, hidden_dim, attn_drop, dtype=torch.float64):

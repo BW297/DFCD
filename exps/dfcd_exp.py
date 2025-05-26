@@ -1,7 +1,6 @@
 import os
 import sys
 import argparse
-import torch
 from pprint import pprint
 
 
@@ -49,7 +48,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--encoder_type', default='transformer', type=str)
     parser.add_argument('--decoder_type', default='simplecd', type=str)
-    # parser.add_argument('--in_channels', default=128, type=int)
     parser.add_argument('--out_channels', default=128, type=int)
     parser.add_argument('--mode', default=2, type=int)
     set_common_args(parser)
